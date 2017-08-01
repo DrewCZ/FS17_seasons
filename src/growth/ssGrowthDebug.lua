@@ -52,6 +52,7 @@ function ssGrowthDebug:draw()
         renderText(0.44, 0.72, 0.01, "Crops that will grow in next transtition if planted now: " .. cropsThatCanGrow)
         renderText(0.44, 0.70, 0.01, "Soil temp: " .. tostring(g_seasons.weather.soilTemp))
         renderText(0.44, 0.68, 0.01, "Crop moisture content: " .. tostring(g_seasons.weather.cropMoistureContent))
+        renderText(0.44, 0.66, 0.01, "Ground wetness: " .. tostring(g_currentMission.groundWetness))
     end
 end
 
@@ -109,6 +110,7 @@ function ssGrowthDebug:consoleCommandPrintDebugInfo()
     logInfo("Growth Transition: " .. tostring(transition) .. " " .. ssUtil.fullSeasonName(transition))
     logInfo("Soil temp: " .. tostring(ssWeatherManager.soilTemp))
     logInfo("Crop moisture content: " .. tostring(ssWeatherManager.cropMoistureContent))
+    logInfo("Ground wetness: " .. tostring(g_currentMission.groundWetness))
     print("")
     local cropsThatCanGrow = ""
 
