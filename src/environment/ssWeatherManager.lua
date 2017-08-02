@@ -25,7 +25,8 @@ function ssWeatherManager:load(savegame, key)
     self.soilTemp = ssXMLUtil.getFloat(savegame, key .. ".weather.soilTemp")
     self.prevHighTemp = ssXMLUtil.getFloat(savegame, key .. ".weather.prevHighTemp")
     self.cropMoistureContent = ssXMLUtil.getFloat(savegame, key .. ".weather.cropMoistureContent", 15.0)
-    self.soilWaterContent = ssXMLUtil.getFloat(savegame, key .. ".weather.soilWaterContent", 0.1)
+    self.soilWaterContent = ssXMLUtil.getFloat(savegame, key .. ".weather.soilWaterContent", 0.3)
+    self.avgSoilWaterContent = ssXMLUtil.getFloat(savegame, key .. ".weather.avgSoilWaterContent", 0.3)
     self.moistureEnabled = ssXMLUtil.getBool(savegame, key .. ".weather.moistureEnabled", true)
 
     -- load forecast
@@ -79,6 +80,7 @@ function ssWeatherManager:save(savegame, key)
     ssXMLUtil.setFloat(savegame, key .. ".weather.prevHighTemp", self.prevHighTemp)
     ssXMLUtil.setFloat(savegame, key .. ".weather.cropMoistureContent", self.cropMoistureContent)
     ssXMLUtil.setFloat(savegame, key .. ".weather.soilWaterContent", self.soilWaterContent)
+    ssXMLUtil.setFloat(savegame, key .. ".weather.avgSoilWaterContent", self.avgSoilWaterContent)
     ssXMLUtil.setBool(savegame, key .. ".weather.moistureEnabled", self.moistureEnabled)
 
     for i = 0, table.getn(self.forecast) - 1 do
@@ -396,6 +398,8 @@ function ssWeatherManager:hourChanged()
         if not self:isGroundFrozen() then
             self:updateSoilWaterContent()
         end
+        -- running average of soil water content
+        self.avgSoilWaterContent = self.avgSoilWaterContent * 23/24 + g_currentMission.environment.groundWetness / 24
 
         g_server:broadcastEvent(ssWeatherManagerHourlyEvent:new(self.cropMoistureContent, self.snowDepth))
     end
@@ -698,7 +702,7 @@ function ssWeatherManager:germinationTemperature(fruit)
 end
 
 function ssWeatherManager:canSow(fruit)
-    return self.soilTemp >= self:germinationTemperature(fruit) and g_currentMission.groundWetness > 0.15
+    return self.soilTemp >= self:germinationTemperature(fruit)
 end
 
 function ssWeatherManager:loadGerminateTemperature(path)
@@ -940,4 +944,18 @@ function ssWeatherManager:calculateSoilWetness()
     else
         return ssWeatherManager.soilWaterContent
     end
+end
+
+function ssWeatherManager:soilMoistureCategory()
+    -- exact limits to be tuned
+    if self.avgSoilWaterContent < 0.1 then
+        return 1
+    elseif self.avgSoilWaterContent >= 0.1 and self.avgSoilWaterContent < 0.2 then
+        return 2
+    elseif self.avgSoilWaterContent >= 0.2 and self.avgSoilWaterContent < 0.4 then
+        return 3
+    elseif self.avgSoilWaterContent >= 0.4 and self.avgSoilWaterContent < 0.5 then
+        return 4
+    else
+        return 5
 end
