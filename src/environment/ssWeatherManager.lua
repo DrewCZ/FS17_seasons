@@ -110,7 +110,7 @@ end
 
 function ssWeatherManager:loadMap(name)
     Environment.calculateGroundWetness = Utils.overwrittenFunction(Environment.calculateGroundWetness, ssWeatherManager.calculateSoilWetness)
-    
+
     g_currentMission.environment:addHourChangeListener(self)
     g_currentMission.environment:addDayChangeListener(self)
     g_seasons.environment:addSeasonLengthChangeListener(self)
@@ -169,6 +169,7 @@ function ssWeatherManager:readStream(streamId, connection)
     self.cropMoistureContent = streamReadFloat32(streamId)
     self.moistureEnabled = streamReadBool(streamId)
     self.prevHighTemp = streamReadFloat32(streamId)
+    self.soilWaterContent = streamReadFloat32(streamId)
 
     self.forecastLength = streamReadUInt8(streamId)
     local numRains = streamReadUInt8(streamId)
@@ -215,6 +216,7 @@ function ssWeatherManager:writeStream(streamId, connection)
     streamWriteFloat32(streamId, self.cropMoistureContent)
     streamWriteBool(streamId, self.moistureEnabled)
     streamWriteFloat32(streamId, self.prevHighTemp)
+    streamWriteFloat32(streamId, self.soilWaterContent)
 
     streamWriteUInt8(streamId, table.getn(self.forecast))
     streamWriteUInt8(streamId, table.getn(self.weather))
@@ -394,14 +396,14 @@ function ssWeatherManager:hourChanged()
         end
 
         self:updateCropMoistureContent()
-        
+
         if not self:isGroundFrozen() then
             self:updateSoilWaterContent()
         end
         -- running average of soil water content
         self.avgSoilWaterContent = self.avgSoilWaterContent * 23/24 + g_currentMission.environment.groundWetness / 24
 
-        g_server:broadcastEvent(ssWeatherManagerHourlyEvent:new(self.cropMoistureContent, self.snowDepth))
+        g_server:broadcastEvent(ssWeatherManagerHourlyEvent:new(self.cropMoistureContent, self.snowDepth, self.soilWaterContent))
     end
 end
 
@@ -904,7 +906,7 @@ function ssWeatherManager:updateSoilWaterContent()
     local currentTemp = self:currentTemperature()
     local solarRadiation = g_seasons.daylight:calculateSolarRadiation()
     local prevSoilWaterCont = self.soilWaterContent
-    local soilWaterInfiltration = 0 
+    local soilWaterInfiltration = 0
 
     -- calculate evaporation, if relativeHumidity > 90% or snow on the ground, no evaporation
     if prevSoilWaterCont <= hygroscopicSaturation or relativeHumidity > 90 or self.snowDepth > 0 then
@@ -934,11 +936,9 @@ function ssWeatherManager:updateSoilWaterContent()
 
     soilWaterLeakage = math.max(Ksat * (math.exp(beta*(prevSoilWaterCont - Sfc)) - 1) / (math.exp(beta*(1 - Sfc)) - 1),0)
     self.soilWaterContent = prevSoilWaterCont + 1 / (soilPorosity * depthRootZone) * (soilWaterInfiltration - soilWaterLeakage - soilWaterTranspiration - soilWaterEvaporation)
-
 end
 
 function ssWeatherManager:calculateSoilWetness()
-
     if ssWeatherManager:isGroundFrozen() then
         return 0
     else
@@ -958,4 +958,5 @@ function ssWeatherManager:soilMoistureCategory()
         return 4
     else
         return 5
+    end
 end
