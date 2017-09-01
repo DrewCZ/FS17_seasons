@@ -371,7 +371,7 @@ function ssWeatherManager:dayChanged()
 
         if isFrozen ~= self:isGroundFrozen() then
             -- Call a weather change
-            for _, listener in pairs(g_currentMission.environment.weatherChangeListeners) do
+            for _, listener in ipairs(g_currentMission.environment.weatherChangeListeners) do
                 listener:weatherChanged()
             end
         end
@@ -388,7 +388,7 @@ function ssWeatherManager:hourChanged()
 
         if math.abs(oldSnow - self.snowDepth) > 0.01 then
             -- Call a weather change
-            for _, listener in pairs(g_currentMission.environment.weatherChangeListeners) do
+            for _, listener in ipairs(g_currentMission.environment.weatherChangeListeners) do
                 listener:weatherChanged()
             end
         end
@@ -879,7 +879,7 @@ function ssWeatherManager:updateSoilWaterContent()
     if g_currentMission.environment.currentRain ~= nil then
         currentRainId = g_currentMission.environment.currentRain.rainTypeId
     end
-    
+
     --Soil moisture bucket model
     --Guswa, A. J., M. A. Celia, and I. Rodriguez-Iturbe, Models of soil moisture dynamics in ecohydrology: A comparative study,
     --Water Resour. Res., 38(9), 1166, doi:10.1029/2001WR000826, 2002
