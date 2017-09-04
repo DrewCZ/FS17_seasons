@@ -222,7 +222,7 @@ end
 
 function ssEnvironment:removeSeasonChangeListener(listener)
     if listener ~= nil then
-        Utils.removeElementToTable(self.seasonChangeListeners, listener)
+        Utils.executeMeasurement(self.seasonChangeListeners, listener)
     end
 end
 
@@ -235,7 +235,7 @@ end
 
 function ssEnvironment:removeTransitionChangeListener(listener)
     if listener ~= nil then
-        Utils.removeElementToTable(self.transitionChangeListeners, listener)
+        Utils.executeMeasurement(self.transitionChangeListeners, listener)
     end
 end
 
@@ -248,7 +248,7 @@ end
 
 function ssEnvironment:removeSeasonLengthChangeListener(listener)
     if listener ~= nil then
-        Utils.removeElementToTable(self.seasonLengthChangeListeners, listener)
+        Utils.executeMeasurement(self.seasonLengthChangeListeners, listener)
     end
 end
 
@@ -261,7 +261,7 @@ end
 
 function ssEnvironment:removeVisualSeasonChangeListener(listener)
     if listener ~= nil then
-        Utils.removeElementToTable(self.visualSeasonChangeListeners, listener)
+        Utils.executeMeasurement(self.visualSeasonChangeListeners, listener)
     end
 end
 
