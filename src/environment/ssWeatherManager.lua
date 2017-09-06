@@ -948,9 +948,9 @@ end
 
 function ssWeatherManager:soilMoistureCategory()
     -- exact limits to be tuned
-    if self.avgSoilWaterContent < 0.1 then
+    if self.avgSoilWaterContent < 0.12 then
         return 1
-    elseif self.avgSoilWaterContent >= 0.1 and self.avgSoilWaterContent < 0.2 then
+    elseif self.avgSoilWaterContent >= 0.12 and self.avgSoilWaterContent < 0.2 then
         return 2
     elseif self.avgSoilWaterContent >= 0.2 and self.avgSoilWaterContent < 0.4 then
         return 3
