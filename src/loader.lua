@@ -122,7 +122,9 @@ local files = {
     "gui/ssRectOverlay",
     "gui/ssGraph",
     "gui/ssSeasonsMenu",
-    "gui/ssCatchingUp"
+    "gui/ssCatchingUp",
+
+    "patches/ssCompanyFactory"
 }
 
 local isDebug = false --<%=debug %>
