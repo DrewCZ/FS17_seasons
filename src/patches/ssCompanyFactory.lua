@@ -56,11 +56,11 @@ end
 
 function ssCompanyFactory:updateProductionFactors()
     for _, factory in ipairs(self.factories) do
-        factory.ProductPerHour = factory.ssOriginalProductPerHour * 6 / g_seasons.environment.daysInSeason
+        factory.ProduktPerHour = factory.ssOriginalProductPerHour * 6 / g_seasons.environment.daysInSeason
     end
 end
 
 function ssCompanyFactory:placeableFinalizePlacement()
     self.ssOriginalProductPerHour = self.ProduktPerHour
-    self.ProductPerHour = self.ssOriginalProductPerHour * 6 / g_seasons.environment.daysInSeason
+    self.ProduktPerHour = self.ssOriginalProductPerHour * 6 / g_seasons.environment.daysInSeason
 end
